@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Row, Col } from 'antd';
 
 import { userActions } from '../../_actions/user.actions';
 
@@ -21,25 +22,27 @@ class HomePage extends React.Component<Props, State> {
     render() {
         const { user, users } = this.props;
         return (
-            <div className="col-md-6 col-md-offset-3">
-                <h1>Hi {user.firstName}!</h1>
-                <p>You're logged in with React & JWT!!</p>
-                <h3>Users from secure api end point:</h3>
-                {users.loading && <em>Loading users...</em>}
-                {users.error && <span className="text-danger">ERROR: {users.error}</span>}
-                {users.items &&
-                    <ul>
-                        {users.items.map((user: any, index: number) =>
-                            <li key={user._id}>
-                                {user.email}
-                            </li>
-                        )}
-                    </ul>
-                }
-                <p>
-                    <Link to="/login">Logout</Link>
-                </p>
-            </div>
+            <Row type="flex" justify="space-around" align="middle">
+                <Col span={12} offset={6}>
+                    <h1>Hi {user.firstName}!</h1>
+                    <p>You're logged in with React & JWT!!</p>
+                    <h3>Users from secure api end point:</h3>
+                    {users.loading && <em>Loading users...</em>}
+                    {users.error && <span className="text-danger">ERROR: {users.error}</span>}
+                    {users.items &&
+                        <ul>
+                            {users.items.map((user: any, index: number) =>
+                                <li key={user._id}>
+                                    {user.email}
+                                </li>
+                            )}
+                        </ul>
+                    }
+                    <p>
+                        <Link to="/login">Logout</Link>
+                    </p>
+                </Col >
+            </Row>
         );
     }
 }

@@ -1,10 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Alert, Form, Input, Icon, Button, Checkbox } from 'antd';
+import {FormComponentProps} from 'antd/lib/form/Form';
 
 import { userActions } from '../../_actions/user.actions';
+import { history } from '../../_helpers/history';
+import { alertActions } from '../../_actions/alert.actions';
+import './LoginPage.scss';
 
-interface Props {
+interface Props extends FormComponentProps {
     dispatch?: any;
     alert?: any;
     users?: any;
@@ -19,12 +23,14 @@ interface State {
     authentication?: any;
 }
 
-class LoginPage extends React.Component<Props, State> {
-    constructor(props: Props) {
+class LoginPage extends React.Component<Props & FormComponentProps, State> {
+
+    constructor(props: Props & FormComponentProps) {
         super(props);
+        const { dispatch } = this.props;
 
         // reset login status
-        this.props.dispatch(userActions.logout());
+        dispatch(userActions.logout());
 
         this.state = {
             username: '',
@@ -34,6 +40,15 @@ class LoginPage extends React.Component<Props, State> {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        history.listen((location, action) => {
+            // clear alert on location change
+            dispatch(alertActions.clear());
+        });
+    }
+
+    hasErrors(fieldsError: any) {
+        return Object.keys(fieldsError).some(field => fieldsError[field]);
     }
 
     handleChange(e: any) {
@@ -43,54 +58,81 @@ class LoginPage extends React.Component<Props, State> {
 
     handleSubmit(e: any) {
         e.preventDefault();
-
-        this.setState({ submitted: true });
         const { username, password } = this.state;
-        const { dispatch } = this.props;
-        if (username && password) {
-            dispatch(userActions.login(username, password));
-        }
+
+        this.props.form.validateFields((err, values) => {
+            if (!err && username && password) {
+              this.setState({ submitted: true });
+              const { dispatch } = this.props;
+              dispatch(userActions.login(username, password));
+            }
+        });
     }
 
     render() {
-        const { loggingIn } = this.props;
-        const { username, password, submitted } = this.state;
+        const { loggingIn, alert } = this.props;
+        const { getFieldDecorator } = this.props.form;
+
         return (
-            <div className="col-md-6 col-md-offset-3">
-                <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
-                        <label htmlFor="username">Username</label>
-                        <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
-                        {submitted && !username &&
-                            <div className="help-block">Username is required</div>
-                        }
-                    </div>
-                    <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={password} onChange={this.handleChange} />
-                        {submitted && !password &&
-                            <div className="help-block">Password is required</div>
-                        }
-                    </div>
-                    <div className="form-group">
-                        <button className="btn btn-primary">Login</button>
-                        {loggingIn &&
-                            <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-                        }
-                    </div>
-                </form>
-            </div>
+            <Form name="form" onSubmit={this.handleSubmit} className="login-form">
+                <Form.Item>
+                    {getFieldDecorator('username', {
+                        rules: [{ required: true, message: 'Please input your username!' }],
+                    })(
+                        <Input
+                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder="Username"
+                            name="username"
+                            onChange={this.handleChange} />
+                    )}
+                </Form.Item>
+                <Form.Item>
+                    {getFieldDecorator('password', {
+                        rules: [{ required: true, message: 'Please input your Password!' }],
+                    })(
+                        <Input
+                            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            type="password"
+                            placeholder="Password"
+                            name="password"
+                            onChange={this.handleChange} />
+                    )}
+                </Form.Item>
+                <Form.Item>
+                    {getFieldDecorator('remember', {
+                        valuePropName: 'checked',
+                        initialValue: true,
+                    })(
+                        <Checkbox>Remember me</Checkbox>
+                    )}
+                    <a className="login-form-forgot" href="">Forgot password</a>
+                <Button type="primary" htmlType="submit" className="login-form-button">
+                    { loggingIn ? <Icon type="loading" /> : 'Login' }
+                </Button>
+                    Or <a href="">register now!</a>
+                </Form.Item>
+                {alert.message &&
+                
+                <Alert
+                    message={alert.message}
+                    type={alert.type}
+                    closable />
+                }
+            </Form>
         );
     }
 }
 
+const WrappedLogin = Form.create()(LoginPage);
+
 function mapStateToProps(state: any) {
+    const { alert } = state;
     const { loggingIn } = state.authentication;
     return {
-        loggingIn
+        loggingIn,
+        alert
     };
 }
 
-const connectedLoginPage = connect(mapStateToProps)(LoginPage);
-export { connectedLoginPage as LoginPage };
+const connectedLoginPage = connect(mapStateToProps)(WrappedLogin);
+export default connectedLoginPage;
