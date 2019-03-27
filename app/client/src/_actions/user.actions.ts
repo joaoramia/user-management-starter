@@ -4,6 +4,7 @@ import { alertActions } from './alert.actions';
 import { history } from '../_helpers/history';
 
 export const userActions = {
+    register,
     login,
     logout,
     getAll
@@ -17,7 +18,7 @@ function login(username: string, password: string) {
             .then(
                 user => { 
                     dispatch(success(user));
-                    history.push('/');
+                    history.push('/panel');
                 },
                 error => {
                     dispatch(failure(error));
@@ -25,11 +26,29 @@ function login(username: string, password: string) {
                 }
             );
     };
-
-    function request(user: any) { return { type: userConstants.LOGIN_REQUEST, user } }
-    function success(user: any) { return { type: userConstants.LOGIN_SUCCESS, user } }
-    function failure(error: any) { return { type: userConstants.LOGIN_FAILURE, error } }
 }
+
+function register(email: string, username: string, password: string, role = 'User') {
+    return (dispatch: any) => {
+        dispatch(request({ username }));
+
+        userService.register(email, username, password, role)
+            .then(
+                user => { 
+                    dispatch(success(user));
+                    dispatch(alertActions.success(String('User successfully registered, you may now login')));
+                },
+                error => {
+                    dispatch(failure(error));
+                    dispatch(alertActions.error(String(error)));
+                }
+            );
+    };
+}
+
+function request(user: any) { return { type: userConstants.LOGIN_REQUEST, user } }
+function success(user: any) { return { type: userConstants.LOGIN_SUCCESS, user } }
+function failure(error: any) { return { type: userConstants.LOGIN_FAILURE, error } }
 
 function logout() {
     userService.logout();

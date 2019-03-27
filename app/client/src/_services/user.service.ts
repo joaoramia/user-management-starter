@@ -1,12 +1,25 @@
 import { authHeader } from '../_helpers/auth-helper';
 
 export const userService = {
+    register,
     login,
     logout,
     getAll
 };
 
 const { REACT_APP_API_URL } = process.env;
+
+function register(email: string, username: string, password: string, role = 'User') {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, username, role })
+    };
+
+    return fetch(`${REACT_APP_API_URL}/api/users/register`, requestOptions)
+        .then(handleResponse)
+        .then(res => res);
+}
 
 function login(email: string, password: string) {
     const requestOptions = {

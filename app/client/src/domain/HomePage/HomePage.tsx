@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
 
 import { userActions } from '../../_actions/user.actions';
 
@@ -10,13 +9,27 @@ interface Props {
     alert?: any;
     users?: any;
     user?: any;
+    history?: any;
 }
 
 interface State {}
 
 class HomePage extends React.Component<Props, State> {
+
+    constructor(props: Props) {
+        super(props);
+        this.logout = this.logout.bind(this);
+    }
+
     componentDidMount() {
         this.props.dispatch(userActions.getAll());
+    }
+
+    logout() {
+        const { dispatch } = this.props;
+        // reset login status
+        dispatch(userActions.logout());
+        this.props.history.push('/login')
     }
 
     render() {
@@ -39,7 +52,7 @@ class HomePage extends React.Component<Props, State> {
                         </ul>
                     }
                     <p>
-                        <Link to="/login">Logout</Link>
+                        <Button type="primary" onClick={this.logout}>Logout</Button>
                     </p>
                 </Col >
             </Row>

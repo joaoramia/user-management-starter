@@ -1,7 +1,6 @@
 import React from 'react';
 import { Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Row, Col } from 'antd';
 import "antd/dist/antd.css";
 
 import { history } from '../_helpers/history';
@@ -9,7 +8,8 @@ import { alertActions } from '../_actions/alert.actions';
 import { PrivateRoute } from '../_components/PrivateRoute';
 import { HomePage } from '../domain/HomePage/HomePage';
 import LoginPage from '../domain/LoginPage/LoginPage';
-
+import { LoggedOut } from '../domain/Layouts/LoggedOut/LoggedOut';
+import { PublicRoute } from '../_components/PublicRoute';
 
 interface Props {
     dispatch: any;
@@ -33,10 +33,9 @@ class App extends React.Component<Props, State> {
         const { alert } = this.props;
         return (
             <Router history={history}>
-                <div>
-                    <PrivateRoute exact path="/" component={HomePage} />
-                    <Route path="/login" component={LoginPage} />
-                </div>
+                {/* <PrivateRoute path="/panel" /> */}
+                <PublicRoute path="/"/>
+                {/* <PublicRoute path="/" component={LoginPage}/> */}
             </Router>
         );
     }
