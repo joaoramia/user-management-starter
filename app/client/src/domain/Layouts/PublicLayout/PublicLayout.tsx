@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout, Menu, Icon, Dropdown, Avatar } from 'antd';
 import { connect } from 'react-redux';
 
-import './LoggedOut.scss';
+import './PublicLayout.scss';
 import { Route, Redirect, Switch } from 'react-router';
 import connectedLoginPage from '../../LoginPage/LoginPage';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import connectedRegisterPage from '../../RegisterPage/RegisterPage';
 
 const { Header, Sider, Content } = Layout;
 
-class LoggedOut extends React.Component {
+class PublicLayout extends React.Component {
   state = {
     collapsed: false,
   };
@@ -34,7 +34,7 @@ class LoggedOut extends React.Component {
     );
 
     return (
-      <Layout id="logged-out-component">
+      <Layout id="public-layout-component">
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Dropdown overlay={topMenu} trigger={['click']}>
@@ -67,5 +67,5 @@ function mapStateToProps(state: any) {
     };
 }
 
-const connectedLoggedOut = connect(mapStateToProps)(LoggedOut);
-export { connectedLoggedOut as LoggedOut };
+const connectedPublicLayout = connect(mapStateToProps)(PublicLayout);
+export { connectedPublicLayout as PublicLayout };

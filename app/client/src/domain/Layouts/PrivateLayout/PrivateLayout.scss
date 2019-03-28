@@ -1,4 +1,4 @@
-#logged-in-component {
+#private-layout-component {
     height: 100%;
     .trigger {
         font-size: 18px;
@@ -10,6 +10,10 @@
         &:hover {
             color: #1890ff;
         }
+    }
+
+    .side-menu-link {
+        display: inline;
     }
     
     .logo {

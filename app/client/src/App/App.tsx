@@ -5,10 +5,6 @@ import "antd/dist/antd.css";
 
 import { history } from '../_helpers/history';
 import { alertActions } from '../_actions/alert.actions';
-import { PrivateRoute } from '../_components/PrivateRoute';
-import { HomePage } from '../domain/HomePage/HomePage';
-import LoginPage from '../domain/LoginPage/LoginPage';
-import { LoggedOut } from '../domain/Layouts/LoggedOut/LoggedOut';
 import { PublicRoute } from '../_components/PublicRoute';
 
 interface Props {
@@ -33,9 +29,7 @@ class App extends React.Component<Props, State> {
         const { alert } = this.props;
         return (
             <Router history={history}>
-                {/* <PrivateRoute path="/panel" /> */}
                 <PublicRoute path="/"/>
-                {/* <PublicRoute path="/" component={LoginPage}/> */}
             </Router>
         );
     }

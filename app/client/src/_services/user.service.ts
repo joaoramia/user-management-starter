@@ -4,7 +4,8 @@ export const userService = {
     register,
     login,
     logout,
-    getAll
+    getAll,
+    _delete
 };
 
 const { REACT_APP_API_URL } = process.env;
@@ -50,6 +51,15 @@ function getAll() {
     };
 
     return fetch(`${REACT_APP_API_URL}/api/users`, requestOptions).then(handleResponse);
+}
+
+function _delete(id: string) {
+    const requestOptions: any = {
+        method: 'DELETE',
+        headers: authHeader()
+    };
+
+    return fetch(`${REACT_APP_API_URL}/api/users/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response: any) {

@@ -37,6 +37,9 @@ export async function create(userParam: UserParam) {
     if (await UserModel.findOne({ email: userParam.email })) {
         throw 'email "' + userParam.email + '" is already taken';
     }
+    if (await UserModel.findOne({ username: userParam.username })) {
+        throw 'username "' + userParam.username + '" is already taken';
+    }
 
     const user: any = new User(userParam);
 

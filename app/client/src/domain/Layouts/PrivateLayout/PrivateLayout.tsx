@@ -1,10 +1,11 @@
 import React from 'react';
 import { Layout, Menu, Icon, Dropdown, Avatar } from 'antd';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
-import './LoggedIn.scss';
+import './PrivateLayout.scss';
 import { HomePage } from '../../HomePage/HomePage';
+import { UsersPage } from '../../Users/UsersPage/UsersPage'
 import { PrivateRoute } from '../../../_components/PrivateRoute';
 import { userActions } from '../../../_actions/user.actions';
 
@@ -20,7 +21,7 @@ interface Props {
 
 interface State {}
 
-class LoggedIn extends React.Component<Props, State> {
+class PrivateLayout extends React.Component<Props, State> {
   state = {
     collapsed: false,
   };
@@ -59,7 +60,7 @@ class LoggedIn extends React.Component<Props, State> {
     const { user } = this.props;
 
     return (
-      <Layout id="logged-in-component">
+      <Layout id="private-layout-component">
         <Sider
           trigger={null}
           collapsible
@@ -67,18 +68,10 @@ class LoggedIn extends React.Component<Props, State> {
           theme="dark"
         >
           <div className="logo" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-            <Menu.Item key="1">
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['/panel/users']} selectedKeys={[location.pathname]}>
+            <Menu.Item key="/panel/users">
               <Icon type="user" />
-              <span>nav 1</span>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="video-camera" />
-              <span>nav 2</span>
-            </Menu.Item>
-            <Menu.Item key="3">
-              <Icon type="upload" />
-              <span>nav 3</span>
+              <NavLink to={`/panel/users`} className={this.state.collapsed ? '' : 'side-menu-link'}>Users</NavLink>
             </Menu.Item>
           </Menu>
         </Sider>
@@ -101,14 +94,8 @@ class LoggedIn extends React.Component<Props, State> {
             margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280,
           }}
           >
-            <PrivateRoute path="/panel" component={HomePage}/>
-            {/* <Route exact path="/" render={() => (
-                localStorage.getItem('user') ? (
-                    <PrivateRoute path="/panel" component={HomePage}/>
-                ) : (
-                    <Redirect to="/dashboard"/>
-                )
-            )}/> */}
+            <PrivateRoute exact path="/panel" component={HomePage}/>
+            <PrivateRoute exact path="/panel/users" component={UsersPage}/>
           </Content>
         </Layout>
       </Layout>
@@ -125,5 +112,5 @@ function mapStateToProps(state: any) {
     };
 }
 
-const connectedLoggedIn = connect(mapStateToProps)(LoggedIn);
-export { connectedLoggedIn as LoggedIn };
+const connectedPrivateLayout = connect(mapStateToProps)(PrivateLayout);
+export { connectedPrivateLayout as PrivateLayout };
