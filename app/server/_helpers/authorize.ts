@@ -5,7 +5,7 @@ import { User } from '../users/user.model';
 
 const { JWT_SECRET } = process.env;
 
-interface RequestType extends Request {
+export interface RequestType extends Request {
     user: User
 }
 

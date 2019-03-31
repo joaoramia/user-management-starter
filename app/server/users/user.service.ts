@@ -32,7 +32,7 @@ export async function getById(id: string) {
     return await UserModel.findById(id).select('-hash');
 }
 
-export async function create(userParam: UserParam) {
+export async function create(userParam: UserParam, role: string) {
     // validate
     if (await UserModel.findOne({ email: userParam.email })) {
         throw 'email "' + userParam.email + '" is already taken';
@@ -41,7 +41,7 @@ export async function create(userParam: UserParam) {
         throw 'username "' + userParam.username + '" is already taken';
     }
 
-    const user: any = new User(userParam);
+    const user: any = new User({...userParam, role});
 
     // hash password
     if (userParam.password) {
@@ -60,6 +60,9 @@ export async function update(id: string, userParam: UserParam) {
     if (user.email !== userParam.email && await UserModel.findOne({ email: userParam.email })) {
         throw 'email "' + userParam.email + '" is already taken';
     }
+    if (user.username !== userParam.username && await UserModel.findOne({ username: userParam.username })) {
+        throw 'username "' + userParam.username + '" is already taken';
+    }
 
     // hash password if it was entered
     if (userParam.password) {
@@ -70,8 +73,10 @@ export async function update(id: string, userParam: UserParam) {
     Object.assign(user, userParam);
 
     await user.save();
+
+    return user;
 }
 
-export async function _delete(id: string) {
-    await UserModel.findByIdAndRemove(id);
+export async function _delete(_id: string) {
+    await UserModel.findOneAndDelete({_id});
 }

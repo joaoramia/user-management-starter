@@ -11,7 +11,7 @@ import { errorHandler } from './_helpers/error-handler';
 import { router } from './users/users.controller';
 import { authorize } from './_helpers/authorize';
 
-const app: express.Application = express();
+export const app: express.Application = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
