@@ -1,5 +1,6 @@
 #private-layout-component {
     height: 100%;
+
     .trigger {
         font-size: 18px;
         line-height: 64px;
@@ -26,4 +27,12 @@
         margin-right: 20px;
         float: right;
     }
+
+    .loading-content {
+        visibility: hidden;
+    }
+}
+
+.profile-icon {
+    margin-right: 8px;
 }

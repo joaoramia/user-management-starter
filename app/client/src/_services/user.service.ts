@@ -5,6 +5,8 @@ export const userService = {
     login,
     logout,
     getAll,
+    getById,
+    update,
     _delete
 };
 
@@ -51,6 +53,25 @@ function getAll() {
     };
 
     return fetch(`${REACT_APP_API_URL}/api/users`, requestOptions).then(handleResponse);
+}
+
+function getById(id: string) {
+    const requestOptions: any = {
+        method: 'GET',
+        headers: authHeader()
+    };
+
+    return fetch(`${REACT_APP_API_URL}/api/users/${id}`, requestOptions).then(handleResponse);
+}
+
+function update(user: any) {
+    const requestOptions: any = {
+        method: 'PUT',
+        headers: authHeader(),
+        body: JSON.stringify(user)
+    };
+
+    return fetch(`${REACT_APP_API_URL}/api/users/${user.id}`, requestOptions).then(handleResponse);
 }
 
 function _delete(id: string) {

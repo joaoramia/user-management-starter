@@ -1,20 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Alert, Form, Input, Icon, Button, Checkbox, Col, Row, Tooltip, Card } from 'antd';
+import { Alert, Form, Input, Icon, Button, Row } from 'antd';
 import {FormComponentProps} from 'antd/lib/form/Form';
 
-import { userActions } from '../../_actions/user.actions';
-import { history } from '../../_helpers/history';
-import { alertActions } from '../../_actions/alert.actions';
-import './RegisterPage.scss';
-import { Link } from 'react-router-dom';
+import { userActions } from '../../../_actions/user.actions';
+import { history } from '../../../_helpers/history';
+import { alertActions } from '../../../_actions/alert.actions';
+import './EditUserPage.scss';
 
 interface Props extends FormComponentProps {
     dispatch?: any;
     alert?: any;
     users?: any;
     user?: any;
-    loggingIn?: any;
+    loading?: any;
+    match?: any;
 }
 
 interface State {
@@ -24,15 +24,16 @@ interface State {
     submitted?: boolean;
     authentication?: any;
     confirmDirty?: any;
+    user?: any;
+    id?: any;
+    loading?: any;
 }
 
-class RegisterPage extends React.Component<Props & FormComponentProps, State> {
+class EditUserPage extends React.Component<Props & FormComponentProps, State> {
 
     constructor(props: Props & FormComponentProps) {
         super(props);
         const { dispatch } = this.props;
-        // reset login status
-        dispatch(userActions.logout());
 
         this.state = {
             username: '',
@@ -51,6 +52,8 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
             // clear alert on location change
             dispatch(alertActions.clear());
         });
+
+        dispatch(userActions.getById(this.props.match.params.id));
     }
 
     hasErrors(fieldsError: any) {
@@ -59,25 +62,28 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
 
     handleChange(e: any) {
         const { name, value } = e.target;
-        this.setState({ [name]: value });
+        this.setState({ ...this.state, [name]: value });
     }
 
     handleSubmit(e: any) {
         e.preventDefault();
-        const { username, password, email } = this.state;
+        const { user } = this.props;
+        const username = this.state.username || user && user.username;
+        const email = this.state.email || user && user.email;
+        const password = this.state.password || user && user.password;
 
         this.props.form.validateFields((err, values) => {
-            if (!err && username && password && email) {
-              this.setState({ submitted: true });
+            if (!err) {
+              this.setState({ ...this.state, submitted: true });
               const { dispatch } = this.props;
-              dispatch(userActions.register(email, username, password));
+              dispatch(userActions.update({ username, password, email, id: this.props.user && this.props.user.id }));
             }
         });
     }
 
     handleConfirmBlur(e: any) {
         const value = e.target.value;
-        this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+        this.setState({ ...this.state, confirmDirty: this.state.confirmDirty || !!value });
     }
     
     compareToFirstPassword (rule: any, value: any, callback: any) {
@@ -98,13 +104,20 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
     }
 
     render() {
-        const { loggingIn, alert } = this.props;
+        const { alert, loading } = this.props;
         const { getFieldDecorator } = this.props.form;
+        console.log(this.props);
+
+        const { user } = this.props;
+        if (user) {
+            this.props.form.getFieldDecorator('email', { initialValue: this.state.email || user.email });
+            this.props.form.getFieldDecorator('username', { initialValue: this.state.username || user.username });
+        }
         const passwordTips = 'Minimum length of 6 characters';
 
         return (
-            <Row type="flex" justify="center">
-                <Card>
+            user ? 
+                <Row type="flex" justify="center">
                     <Form name="form" onSubmit={this.handleSubmit} className="register-form">
                         <Form.Item>
                             {getFieldDecorator('email', {
@@ -138,8 +151,6 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
                         <Form.Item help={passwordTips}>
                         {getFieldDecorator('password', {
                             rules: [{
-                            required: true, message: 'Please input your password!',
-                            }, {
                             validator: this.validateToNextPassword,
                             }, {
                             min: 6, message: 'Minimum length of 6 characters!'
@@ -148,7 +159,7 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
                             <Input
                                 prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 type="password"
-                                placeholder="Password"
+                                placeholder="Password - Keep empty if you don't want to change it"
                                 name="password"
                                 onChange={this.handleChange} />
                         )}
@@ -156,7 +167,7 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
                         <Form.Item>
                             {getFieldDecorator('confirm', {
                                 rules: [{
-                                required: true, message: 'Please confirm your password!',
+                                required: !!this.state.password, message: 'Please confirm your password!',
                                 }, {
                                 validator: this.compareToFirstPassword,
                                 }],
@@ -164,7 +175,7 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
                             <Input
                                 prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 type="password"
-                                placeholder="Confirm password"
+                                placeholder="Confirm new password"
                                 onBlur={this.handleConfirmBlur}
                                 onChange={this.handleChange} />
                         )}
@@ -172,9 +183,8 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
 
                         <Form.Item>
                             <Button type="primary" htmlType="submit" className="register-form-button">
-                                { loggingIn ? <Icon type="loading" /> : 'Register' }
+                                { loading.type === 'button' && loading.state ? <Icon type="loading" /> : 'Update User' }
                             </Button>
-                            Or, <Link to="/login">login now!</Link>
                         </Form.Item>
                         {alert.message &&
                         
@@ -184,22 +194,23 @@ class RegisterPage extends React.Component<Props & FormComponentProps, State> {
                             closable />
                         }
                     </Form>
-                </Card>
-            </Row>
+                </Row>
+            : null
         );
     }
 }
 
-const WrappedRegister = Form.create()(RegisterPage);
+const WrappedRegister = Form.create()(EditUserPage);
 
 function mapStateToProps(state: any) {
-    const { alert } = state;
-    const { loggingIn } = state.authentication;
+    const { alert, loading } = state;
+    const { user } = state.users;
     return {
-        loggingIn,
-        alert
+        alert,
+        user,
+        loading
     };
 }
 
-const connectedRegisterPage = connect(mapStateToProps)(WrappedRegister);
-export default connectedRegisterPage;
+const connectedEditUserPage = connect(mapStateToProps)(WrappedRegister);
+export default connectedEditUserPage;

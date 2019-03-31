@@ -5,38 +5,75 @@ export function users(state: any = {}, action: any) {
     // Get All
     case userConstants.GETALL_REQUEST:
         return {
-            loading: true,
             ...state
         };
     case userConstants.GETALL_SUCCESS:
         return {
-            items: action.users,
-            ...state
+            ...state,
+            items: action.users
         };
     case userConstants.GETALL_FAILURE:
         return { 
-            error: action.error,
+            ...state,
+            error: action.error
+        };
+
+    // Get By ID
+    case userConstants.GETBYID_REQUEST:
+        return {
             ...state
+        };
+    case userConstants.GETBYID_SUCCESS:
+        return {
+            ...state,
+            user: action.user
+        };
+    case userConstants.GETBYID_FAILURE:
+        return { 
+            ...state,
+            error: action.error
+        };
+
+    // Update
+    case userConstants.UPDATE_REQUEST:
+        return {
+            ...state
+        };
+    case userConstants.UPDATE_SUCCESS:
+        return {
+            ...state,
+            user: action.user
+        };
+    case userConstants.UPDATE_FAILURE:
+        return { 
+            ...state,
+            error: action.error
         };
     
     // Delete
     case userConstants.DELETE_REQUEST:
         return {
-            loading: true,
             ...state
         };
     case userConstants.DELETE_SUCCESS:
         const { items } = state;
         return {
-            loading: false,
+            state,
             items: (items || []).filter((item: any) => item.id !== action.id)
         };
     case userConstants.DELETE_FAILURE:
         return { 
-            error: action.error,
-            ...state
+            ...state,
+            error: action.error
         };
 
+    // Delete
+    case userConstants.CLEAN:
+        return {
+            ...state,
+            user: null,
+            items: null
+        };
     default:
         return state
     }

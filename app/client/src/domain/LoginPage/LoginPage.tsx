@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Alert, Form, Input, Icon, Button, Checkbox, Col, Row } from 'antd';
+import { Alert, Form, Input, Icon, Button, Checkbox, Col, Row, Card } from 'antd';
 import {FormComponentProps} from 'antd/lib/form/Form';
 
 import { userActions } from '../../_actions/user.actions';
@@ -29,7 +29,7 @@ class LoginPage extends React.Component<Props & FormComponentProps, State> {
     constructor(props: Props & FormComponentProps) {
         super(props);
         const { dispatch } = this.props;
-        console.log('logging out loginPage');
+
         // reset login status
         dispatch(userActions.logout());
 
@@ -76,52 +76,54 @@ class LoginPage extends React.Component<Props & FormComponentProps, State> {
 
         return (
             <Row type="flex" justify="center">
-                <Form name="form" onSubmit={this.handleSubmit} className="login-form">
-                    <Form.Item>
-                        {getFieldDecorator('email', {
-                            rules: [{ required: true, message: 'Please input your email!' }],
-                        })(
-                            <Input
-                                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder="email"
-                                type="email"
-                                name="email"
-                                onChange={this.handleChange} />
-                        )}
-                    </Form.Item>
-                    <Form.Item>
-                        {getFieldDecorator('password', {
-                            rules: [{ required: true, message: 'Please input your Password!' }],
-                        })(
-                            <Input
-                                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                type="password"
-                                placeholder="Password"
-                                name="password"
-                                onChange={this.handleChange} />
-                        )}
-                    </Form.Item>
-                    <Form.Item>
-                        {getFieldDecorator('remember', {
-                            valuePropName: 'checked',
-                            initialValue: true,
-                        })(
-                            <Checkbox>Remember me</Checkbox>
-                        )}
-                        <a className="login-form-forgot" href="">Forgot password</a>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
-                        { loggingIn ? <Icon type="loading" /> : 'Login' }
-                    </Button>
-                        Or <Link to="/register">register now!</Link>
-                    </Form.Item>
-                    {alert.message &&
-                    
-                    <Alert
-                        message={alert.message}
-                        type={alert.type}
-                        closable />
-                    }
-                </Form>
+                <Card>
+                    <Form name="form" onSubmit={this.handleSubmit} className="login-form">
+                        <Form.Item>
+                            {getFieldDecorator('email', {
+                                rules: [{ required: true, message: 'Please input your email!' }],
+                            })(
+                                <Input
+                                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                    placeholder="email"
+                                    type="email"
+                                    name="email"
+                                    onChange={this.handleChange} />
+                            )}
+                        </Form.Item>
+                        <Form.Item>
+                            {getFieldDecorator('password', {
+                                rules: [{ required: true, message: 'Please input your Password!' }],
+                            })(
+                                <Input
+                                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                    type="password"
+                                    placeholder="Password"
+                                    name="password"
+                                    onChange={this.handleChange} />
+                            )}
+                        </Form.Item>
+                        <Form.Item>
+                            {getFieldDecorator('remember', {
+                                valuePropName: 'checked',
+                                initialValue: true,
+                            })(
+                                <Checkbox>Remember me</Checkbox>
+                            )}
+                            <a className="login-form-forgot" href="">Forgot password</a>
+                        <Button type="primary" htmlType="submit" className="login-form-button">
+                            { loggingIn ? <Icon type="loading" /> : 'Login' }
+                        </Button>
+                            Or <Link to="/register">register now!</Link>
+                        </Form.Item>
+                        {alert.message &&
+                        
+                        <Alert
+                            message={alert.message}
+                            type={alert.type}
+                            closable />
+                        }
+                    </Form>
+                </Card>
             </Row>
         );
     }
