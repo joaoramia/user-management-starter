@@ -5,6 +5,7 @@ import { Table, Divider, Popconfirm, message } from 'antd';
 
 import { userActions } from '../../../_actions/user.actions';
 import './UsersPage.scss';
+import { UsersMenu } from '../UsersMenu/UsersMenu';
 
 interface Props {
     dispatch?: any;
@@ -72,7 +73,10 @@ class UsersPage extends React.Component<Props, State> {
     render() {
         const { users, user } = this.props;
         return (
-            users && users.items ? <Table columns={this.getColumns(user.role)} dataSource={users.items} rowKey="id"  /> : null
+          <div>
+            <UsersMenu {...this.props}></UsersMenu>
+            {users && users.items ? <Table columns={this.getColumns(user.role)} dataSource={users.items} rowKey="id"  /> : null}
+          </div>
         );
     }
 }

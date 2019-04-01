@@ -102,9 +102,9 @@ class PrivateLayout extends React.Component<Props, State> {
             className={loading.type === 'page' && loading.state ? 'loading-content' : ''} 
             >
               <Switch>
-                <PrivateRoute exact path="/panel" component={HomePage}/>
-                <PrivateRoute exact path="/panel/users" component={UsersPage}/>
-                <PrivateRoute path="/panel/users/:id" component={connectedEditUserPage}/>
+                <PrivateRoute exact path="/panel" component={HomePage} {...this.props}/>
+                <PrivateRoute exact path="/panel/users" component={UsersPage} {...this.props}/>
+                <PrivateRoute path="/panel/users/:id" component={connectedEditUserPage} {...this.props}/>
                 <PrivateRoute path="*" component={NotFoundPage}/>
               </Switch>
           </Content>
