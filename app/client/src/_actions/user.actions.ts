@@ -11,6 +11,7 @@ export const userActions = {
     getAll,
     getById,
     update,
+    create,
     _delete,
     clean
 };
@@ -125,6 +126,31 @@ function update(user: any) {
                 user => {
                     dispatch(success(user));
                     dispatch(alertActions.success(String('User successfully updated'), true));
+                    dispatch(loadingActions.button(false));
+                },
+                error => { 
+                    dispatch(failure(String(error)));
+                    dispatch(alertActions.error(String(error), true));
+                    dispatch(loadingActions.button(false));
+                }
+            );
+    };
+
+    function request(user: string) { return { type: userConstants.UPDATE_REQUEST, user } }
+    function success(user: any) { return { type: userConstants.UPDATE_SUCCESS, user } }
+    function failure(error: any) { return { type: userConstants.UPDATE_FAILURE, error } }
+}
+
+function create(user: any) {
+    return (dispatch: any) => {
+        dispatch(request(user));
+        dispatch(loadingActions.button(true));
+
+        userService.create(user)
+            .then(
+                user => {
+                    dispatch(success(user));
+                    dispatch(alertActions.success(String('User successfully created'), true));
                     dispatch(loadingActions.button(false));
                 },
                 error => { 

@@ -6,17 +6,15 @@ import { FormComponentProps } from "antd/lib/form/Form";
 import { userActions } from "../../../_actions/user.actions";
 import { history } from "../../../_helpers/history";
 import { alertActions } from "../../../_actions/alert.actions";
-import "./EditUserPage.scss";
-import RadioGroup from "antd/lib/radio/group";
+import "./CreateUserPage.scss";
 import { UsersMenu } from "../UsersMenu/UsersMenu";
-import { statement } from "@babel/template";
+import RadioGroup from "antd/lib/radio/group";
 
 interface Props extends FormComponentProps {
   dispatch?: any;
   alert?: any;
   users?: any;
   user?: any;
-  loggedInUser?: any;
   loading?: any;
   match?: any;
 }
@@ -27,25 +25,27 @@ interface State {
   email?: string;
   role?: string;
   submitted?: boolean;
-  authentication: any;
+  authentication?: any;
   confirmDirty?: any;
   user?: any;
   id?: any;
   loading?: any;
 }
 
-class EditUserPage extends React.Component<Props & FormComponentProps, State> {
+class CreateUserPage extends React.Component<
+  Props & FormComponentProps,
+  State
+> {
   constructor(props: Props & FormComponentProps) {
     super(props);
     const { dispatch } = this.props;
 
     this.state = {
-      ...this.state,
       username: "",
       password: "",
       email: "",
-      role: "",
-      submitted: false
+      submitted: false,
+      role: 'User'
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -58,8 +58,6 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
       // clear alert on location change
       dispatch(alertActions.clear());
     });
-
-    dispatch(userActions.getById(this.props.match.params.id));
   }
 
   hasErrors(fieldsError: any) {
@@ -73,25 +71,16 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
 
   handleSubmit(e: any) {
     e.preventDefault();
-    const { user } = this.props;
-    const username = this.state.username || (user && user.username);
-    const email = this.state.email || (user && user.email);
-    const password = this.state.password || (user && user.password);
-    const role = this.state.role || (user && user.role);
+    const username = this.state.username;
+    const email = this.state.email;
+    const password = this.state.password;
+    const role = this.state.role;
 
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.setState({ ...this.state, submitted: true });
         const { dispatch } = this.props;
-        dispatch(
-          userActions.update({
-            username,
-            password,
-            email,
-            id: this.props.user && this.props.user.id,
-            role
-          })
-        );
+        dispatch(userActions.create({ username, password, email, role }));
       }
     });
   }
@@ -122,27 +111,12 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
   }
 
   render() {
-    const { alert, loading } = this.props;
+    const { alert, loading, user } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { loggedInUser } = this.props;
-    
-    const { user } = this.props;
-    console.log(user);
-    if (user) {
-      this.props.form.getFieldDecorator("email", {
-        initialValue: this.state.email || user.email
-      });
-      this.props.form.getFieldDecorator("username", {
-        initialValue: this.state.username || user.username
-      });
-      this.props.form.getFieldDecorator("role", {
-        initialValue: user.role || this.state.role
-      });
-    }
-    console.log(this.state)
+
     const passwordTips = "Minimum length of 6 characters";
 
-    return user ? (
+    return (
       <div>
         <UsersMenu {...this.props} />
         <Row type="flex" justify="center">
@@ -201,6 +175,11 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
               {getFieldDecorator("password", {
                 rules: [
                   {
+                    required: true,
+                    message: "Please input the password!",
+                    whitespace: true
+                  },
+                  {
                     validator: this.validateToNextPassword
                   },
                   {
@@ -214,7 +193,7 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
                     <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
                   }
                   type="password"
-                  placeholder="Password - Keep empty if you don't want to change it"
+                  placeholder="Password"
                   name="password"
                   onChange={this.handleChange}
                 />
@@ -224,8 +203,8 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
               {getFieldDecorator("confirm", {
                 rules: [
                   {
-                    required: !!this.state.password,
-                    message: "Please confirm your password!"
+                    required: true,
+                    message: "Please confirm the password!"
                   },
                   {
                     validator: this.compareToFirstPassword
@@ -244,19 +223,18 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
               )}
             </Form.Item>
 
-            {loggedInUser.role === "Admin" ? (
+            {
+              user && user.role === 'Admin' ? 
               <Form.Item>
-                {getFieldDecorator("role")(
-                  <RadioGroup
-                    onChange={this.handleChange}
-                    name="role"
-                  >
-                    <Radio value={"User"}>User</Radio>
-                    <Radio value={"Admin"}>Admin</Radio>
-                  </RadioGroup>
-                )}
-              </Form.Item>
-            ) : null}
+                <RadioGroup onChange={this.handleChange} name="role" value={this.state.role}>
+                  <Radio value={"User"}>
+                    User
+                  </Radio>
+                  <Radio value={"Admin"}>Admin</Radio>
+                </RadioGroup>
+              </Form.Item> :
+              null
+            }
 
             <Form.Item>
               <Button
@@ -267,7 +245,7 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
                 {loading.type === "button" && loading.state ? (
                   <Icon type="loading" />
                 ) : (
-                  "Update User"
+                  "Create User"
                 )}
               </Button>
             </Form.Item>
@@ -277,23 +255,21 @@ class EditUserPage extends React.Component<Props & FormComponentProps, State> {
           </Form>
         </Row>
       </div>
-    ) : null;
+    );
   }
 }
 
-const WrappedRegister = Form.create()(EditUserPage);
+const WrappedRegister = Form.create()(CreateUserPage);
 
 function mapStateToProps(state: any) {
   const { alert, loading } = state;
-  const loggedInUser = state.authentication.user;
-  const { user } = state.users;
+  const { user } = state.authentication;
   return {
     alert,
     user,
-    loggedInUser,
     loading
   };
 }
 
-const connectedEditUserPage = connect(mapStateToProps)(WrappedRegister);
-export default connectedEditUserPage;
+const connectedCreateUserPage = connect(mapStateToProps)(WrappedRegister);
+export default connectedCreateUserPage;

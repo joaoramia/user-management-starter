@@ -30,6 +30,8 @@ class UsersMenu extends React.Component<Props, State> {
     }
 
     handleClick = (e: any) => {
+        const { history } = this.props;
+        history.push(e.key);
         this.setState({
           current: e.key,
         });
@@ -57,7 +59,7 @@ class UsersMenu extends React.Component<Props, State> {
                     <Icon type="user-add" />Create User
                 </Menu.Item>
                 <Menu.Item key="/panel/users/" disabled>
-                    <a href="https://ant.design" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
+                    <Icon type="user-add" />Edit User
                 </Menu.Item>
             </Menu>
         );
@@ -67,7 +69,7 @@ class UsersMenu extends React.Component<Props, State> {
 function mapStateToProps(state: any) {
     const { users, authentication } = state;
     const { user } = authentication;
-    console.log(state);
+
     return {
         user,
         users

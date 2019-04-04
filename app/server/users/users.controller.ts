@@ -6,10 +6,6 @@ import { User } from './user.model';
 
 export const router = express.Router();
 
-// interface Request {
-//     user?: any;
-// }
-
 // routes
 router.post('/authenticate', authenticate);
 router.post('/register', register);
@@ -27,13 +23,13 @@ function authenticate(req: any, res: Response, next: Function) {
 }
 
 function register(req: any, res: Response, next: Function) {
-    userService.create(req.body, 'User')
+    userService.create(req.body)
     .then(() => res.json({}))
     .catch(err => next(err));
 }
 
 function registerAdmin(req: any, res: Response, next: Function) {
-    userService.create(req.body, 'Admin')
+    userService.create(req.body)
         .then(() => res.json({}))
         .catch(err => next(err));
 }

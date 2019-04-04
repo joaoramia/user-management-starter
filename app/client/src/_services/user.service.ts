@@ -7,6 +7,7 @@ export const userService = {
     getAll,
     getById,
     update,
+    create,
     _delete
 };
 
@@ -72,6 +73,16 @@ function update(user: any) {
     };
 
     return fetch(`${REACT_APP_API_URL}/api/users/${user.id}`, requestOptions).then(handleResponse);
+}
+
+function create(user: any) {
+    const requestOptions: any = {
+        method: 'POST',
+        headers: authHeader(),
+        body: JSON.stringify(user)
+    };
+
+    return fetch(`${REACT_APP_API_URL}/api/users/register`, requestOptions).then(handleResponse);
 }
 
 function _delete(id: string) {

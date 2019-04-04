@@ -11,6 +11,7 @@ import { userActions } from '../../../_actions/user.actions';
 import connectedEditUserPage from '../../Users/EditUserPage/EditUserPage';
 import { LoaderComponent } from '../LoaderComponent/LoaderComponent';
 import { NotFoundPage } from '../../NotFoundPage/NotFoundPage';
+import connectedCreateUserPage from '../../Users/CreateUserPage/CreateUserPage';
 
 const { Header, Sider, Content } = Layout;
 
@@ -60,7 +61,6 @@ class PrivateLayout extends React.Component<Props, State> {
         </Menu>
     );
     const { user, loading } = this.props;
-    console.log(this.props);
 
     return (
       <Layout id="private-layout-component">
@@ -104,6 +104,7 @@ class PrivateLayout extends React.Component<Props, State> {
               <Switch>
                 <PrivateRoute exact path="/panel" component={HomePage} {...this.props}/>
                 <PrivateRoute exact path="/panel/users" component={UsersPage} {...this.props}/>
+                <PrivateRoute exact path="/panel/users/create" component={connectedCreateUserPage} {...this.props}/>
                 <PrivateRoute path="/panel/users/:id" component={connectedEditUserPage} {...this.props}/>
                 <PrivateRoute path="*" component={NotFoundPage}/>
               </Switch>

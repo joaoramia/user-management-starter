@@ -32,7 +32,7 @@ export async function getById(id: string) {
     return await UserModel.findById(id).select('-hash');
 }
 
-export async function create(userParam: UserParam, role: string) {
+export async function create(userParam: UserParam) {
     // validate
     if (await UserModel.findOne({ email: userParam.email })) {
         throw 'email "' + userParam.email + '" is already taken';
@@ -41,7 +41,10 @@ export async function create(userParam: UserParam, role: string) {
         throw 'username "' + userParam.username + '" is already taken';
     }
 
-    const user: any = new User({...userParam, role});
+    const user: any = new User(userParam);
+    if (!user.role) {
+        user.role = 'User';
+    }
 
     // hash password
     if (userParam.password) {
